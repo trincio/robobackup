@@ -1,10 +1,6 @@
 @echo off
 
-REm comportamento strano : scelgo B,  prelimin check poi C cancel, poi X e va in below you can find
-rem motivi il GOTO:EOF e il richiamo continuo di sottosubroutine,
-rem da tenere in osservazione i "goto end" sostituiti praticamente tutti con GOTO:EOF
-
-
+ 
 
 REM ROBOCOPY ERRORLEVEL  HANDLED VIA !ERRORLEVEL!
 REM DETAILS: https://stackoverflow.com/questions/24866477/if-call-exit-and-errorlevel-in-a-bat
