@@ -20,6 +20,8 @@ set ERRLOG=.\ERR.LOG
 
 REM THE DRIVE FOR THE DESTINATION
 set DRIVE=%2
+REM CHECK IF NOT SET
+if "%~2" equ "" set DRIVE=NOT SET
 
 REM THE SHORT PATH FOR ROBOBACKUP. E.g., if the DRIVE is C and SHORTPATH is RBK, the DESTINATION will be C:\RBK
 REM !!! IMPORTANT: IT IS HARDCODED TO AVOID LONG TEXT AND MINIMIZE 255 CHAR PATH ISSUES !!!
@@ -28,6 +30,8 @@ set SHORTPATH=RBK
 set CURRENTSETTINGFILE=%1
 REM REMOVE THE QUOTATION MARK " 
 set CURRENTSETTINGFILE=%CURRENTSETTINGFILE:"=%
+REM CHECK IF NOT SET
+if "%~1" equ "" set CURRENTSETTINGFILE=NOT SET
 
 set HEAD_DESTINATION=undefined
 
@@ -128,30 +132,36 @@ echo B^) Move on with the %CL_BLUETTE%B%CL_WHITE%ACKUP using the current setting
 echo.
 echo X^) E%CL_BLUETTE%x%CL_WHITE%it.
 echo.
+echo H^) Show the %CL_BLUETTE%h%CL_WHITE%elp.
+echo.
 echo ^(if the app doesn't get an answer in 10 minutes, will exit.^).
 echo.
-choice /c DLAFPBX /d X /t 600
+choice /c DLAFPBXH /d X /t 600
 
 set curerrl=%ERRORLEVEL%
+
+REM CHOICE IS H >> HELP
+if %curerrl% EQU 8  goto show_help
 
 REM CHOICE IS X >> EXIT
 if %curerrl% EQU 7  goto end
 
-REM CHOICE IS B >> EXIT
+REM CHOICE IS B >> BACKUP
 if %curerrl% EQU 6 goto do_the_BACKUP
 
-REM CHOICE IS P >> EXIT
+REM CHOICE IS P >> PRINT
 if %curerrl% EQU 5  goto print_settingfile
 
-REM CHOICE IS F >> EXIT
+REM CHOICE IS F >> FILE SETTING
 if %curerrl% EQU 4  goto load_settingfile
 
-REM CHOICE IS A >> advanced_menu 
+REM CHOICE IS A >> ADVANCED MENU 
 if %curerrl% EQU 3  goto advanced_menu
-REM CHOICE IS L >> proceed 
+
+REM CHOICE IS L >> LIST THE BACKUPS 
 if %curerrl% EQU 2  goto list_available_backups
 
-REM CHOICE IS D >> set the destination
+REM CHOICE IS D >> set the DESTINATION
 if %curerrl% EQU 1 goto set_destination
 GOTO:EOF
 
@@ -269,33 +279,34 @@ GOTO:EOF
 
 
 cls
-echo %CL_RED%+-----------------------------------------------------------+%CL_WHITE%  
-echo %CL_RED%^|%CL_GREEN%                Robackup Help                              %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%Robobackup works in a quite self-explanatory way.          %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%Basically the command asks for:                            %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%1. a destination drive letter                              %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%2. the path of a setting file                              %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%Robobackup then runs robocopy for each item in the set-    %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%ting file.                                                 %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%Robobackup, if the destination and the setting file are    %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%passed correctly, runs automatically on these settings.    %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%Otherwise it lets the user choosing  manually  the set-    %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%tings.                                                     %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%Robobackup also works with the following syntax and pa-    %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%rameters:                                                  %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%Robobackup settingPath destinationDiskLetter timeout       %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%timeout                                                    %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|%CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
-echo %CL_RED%+-----------------------------------------------------------+%CL_WHITE%  
-
-echo %CL_RED%+-----------------------------------------------------------+%CL_WHITE%  
+echo %CL_RED%+-------------------------------------------------------------+%CL_WHITE% 
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE% 
+echo %CL_RED%^|   %CL_GREEN%                Robackup Help                              %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%Robobackup works in a quite self-explanatory way.          %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%Basically the command asks for:                            %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%1. a destination drive letter                              %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%2. the path of a setting file                              %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%Robobackup then runs robocopy for each item in the set-    %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%ting file.                                                 %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%Robobackup, if the destination and the setting file are    %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%passed correctly, runs automatically on these settings.    %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%Otherwise it lets the user choosing  manually  the set-    %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%tings.                                                     %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%Robobackup also works with the following syntax and pa-    %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%rameters:                                                  %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_BLUETTE%Robobackup settingPath destinationDiskLetter timeout       %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%The Robocopy used parameters are:                          %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_BLUETTE%/Compress /Z /B /XO /fft /V /NP /R:3 /E /Z /W:5 /MT:32     %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
+echo %CL_RED%+-------------------------------------------------------------+%CL_WHITE%  
+  
 
 
 
