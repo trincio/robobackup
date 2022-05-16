@@ -289,7 +289,7 @@ echo %CL_RED%^|   %CL_GREEN%1. a destination drive letter                       
 echo %CL_RED%^|   %CL_GREEN%2. the path of a setting file                              %CL_RED%^|%CL_WHITE%
 echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
 echo %CL_RED%^|   %CL_GREEN%Robobackup then runs robocopy for each item in the set-    %CL_RED%^|%CL_WHITE%
-echo %CL_RED%^|   %CL_GREEN%ting file.                                                 %CL_RED%^|%CL_WHITE%
+echo %CL_RED%^|   %CL_GREEN%ting file (the file MUST be ANSI, UTF not-allowed).        %CL_RED%^|%CL_WHITE%
 echo %CL_RED%^|   %CL_GREEN%                                                           %CL_RED%^|%CL_WHITE%
 echo %CL_RED%^|   %CL_GREEN%Robobackup, if the destination and the setting file are    %CL_RED%^|%CL_WHITE%
 echo %CL_RED%^|   %CL_GREEN%passed correctly, runs automatically on these settings.    %CL_RED%^|%CL_WHITE%
@@ -408,10 +408,10 @@ if exist %HEAD_DESTINATION% (
 echo. 
 ) else (
 
-echo unfortunately the destination %CL_RED%'%HEAD_DESTINATION%'%CL_WHITE% is not reachable by Robobackup.
-set HEAD_DESTINATION=undefined
-set /p "=Press any key to move back to the menu, retry or make a different choice..."
-goto main_menu
+	echo unfortunately the destination %CL_RED%'%HEAD_DESTINATION%'%CL_WHITE% is not reachable by Robobackup.
+	set HEAD_DESTINATION=undefined
+	set /p "=Press any key to move back to the menu, retry or make a different choice..."
+	goto main_menu
 )
 
 
@@ -423,10 +423,12 @@ rem DESCRIPTION
 rem DESCRIPTION_FILENAME_DETAILS
 
 
-	cls
-	REM DETERMINING THE TOKENIZED DATA AND VARIABLES FOR TIMESTAMP
+cls
+REM DETERMINING THE TOKENIZED DATA AND VARIABLES FOR TIMESTAMP
 
- 
+
+for /f "tokens=1,2,3,4 delims=;" %%a in (%CURRENTSETTINGFILE%) do (
+
 
 	set SOURCE=%%a
 	set DESTINATION=%%b
@@ -626,10 +628,10 @@ rem DESCRIPTION_FILENAME_DETAILS
 
 )
 
-	echo                --------- PROCESS COMPLETED --------- 
-	echo                --------- PROCESS COMPLETED --------- >> !CurMainLogFile!
+echo                --------- PROCESS COMPLETED --------- 
+echo                --------- PROCESS COMPLETED --------- >> !CurMainLogFile!
 
-	setlocal disabledelayedexpansion
+setlocal disabledelayedexpansion
 
 echo.
 echo.
@@ -689,35 +691,35 @@ cls
 
 echo  .
 echo                                       %CL_GREEN%        _____                   %CL_BRIGHT%    www.trincio.com          
-echo                                       %CL_GREEN%      _¡g¶¶@@Ê^^^^^^¶¶gg¡_      %CL_BRIGHT%    www.gabrielemotta.com        
-echo                                       %CL_GREEN%   _µP¶¯¯¯^^°ÑL   ¶@@@@¶¶¡_     %CL_BRIGHT%                                 
-echo                                       %CL_GREEN% ¸¶Ê  ¨L     _   ÑÑ¶@@¶  ^^q_   %CL_BRIGHT%      Robobackup 1.0                        
-echo                                       %CL_GREEN%p^^ Å_  ]     L  J   ¯Ñ¶   ¸¶ç  %CL_BRIGHT%      _                          
-echo                %CL_BRIGHT%       _      ¡_     %CL_GREEN%_¶    )  ¨_    L  Í    ]¯  ,¶@¶§%CL_BRIGHT%g¡¡¡__¶`ç    ¡~q                  
-echo                %CL_BRIGHT%      ¶^^¼____j¡^^¼æw=ª%CL_GREEN%°[     \  \    L  È    Ê  ,Õ¶@@@È%CL_BRIGHT%¯¯¯¯Ñ¯°^^^^°°°Ê,w¶mmæq_            
-echo                %CL_BRIGHT%¸¡æ^*w¶¶~ Î^^¯¯¯ ^|0L  %CL_GREEN%  ¶ç     L J_   L J    j  y^^q¶@@¶L%CL_BRIGHT%    ¶ L     L]     [¶            
-echo               _%CL_BRIGHT%¶¶       [     J L  %CL_RED% J@%CL_GREEN%¶§     L [   ^| ^|   ,^^ J¯_¶@@@^|[%CL_BRIGHT%     W      \]     [¶%CL_YELLOW%g¡_         
-echo          _¡y¶ÑÑ%CL_BRIGHT%ÑÑ      ¿¶     ¨ý   %CL_RED% ¶¯Ê%CL_GREEN%¶¶_    ,"_  ^| È   ¶ /¯,¶@@¶Ñ¶%CL_RED%[%CL_BRIGHT%     `      ¨¶     [¶ÑÑÑ%CL_YELLOW%¶¶gg¡_   
-echo      _¡y¶°¯    %CL_BRIGHT% Ër     ^^       ¯  %CL_RED%  J ¯Ñ@%CL_GREEN%¶ç    ,\  ¬ L  0 / g¶@@@¶Ñ%CL_RED%¶¶%CL_BRIGHT%                   [¶   %CL_YELLOW%  ¯^^ÑÑ¶g¿
-echo   ¼g¶¶Ê_       %CL_BRIGHT% ¶[                 %CL_RED%  L  ¶¶%CL_GREEN%Ñ¶_   \L  J  ¸Ñ` g@¶ÅÑ@%CL_RED% MÑ[ %CL_BRIGHT%                  ÇÊ    %CL_YELLOW%    _¡ý¶
-echo        ¯°ªw¡_  %CL_BRIGHT% ¯Ñ¶µ,_             %CL_RED%  ¶¡¡@¶%CL_GREEN% ¯Ñç   â  É  ý´¡¶@¶¯ _@%CL_RED%@g¶L %CL_BRIGHT%            _._Ær^^     %CL_YELLOW%_¡g¶¶°¯  
-echo            ¯^^¶ç_   %CL_BRIGHT%^^ÞÃ~»,_       %CL_RED%    ¶¯°Ñ¶y_ %CL_GREEN%^^¶¡_ ______¶@¶¯ %CL_RED%_g¶Ñ^^0Õ¸  %CL_BRIGHT%       ¸.-¡æ~¯     %CL_YELLOW%_g¶@¶°¯     
-echo               ¯Ñ¶¡   %CL_BRIGHT% ¯^^^*Ê¶v,_   %CL_RED%   M©^>,  ¯Ñ¶g¡%CL_GREEN%¶@¶@@@@@@@Ê¡%CL_RED%g¶Ñ¯  «$£¶   %CL_BRIGHT%  _.r_g¶¶¯  %CL_YELLOW%    _æ¶@¶¯        
-echo                  Ñ¶¡      Ñ¶g¡°%CL_BRIGHT%»,_ %CL_RED%  L '`¬   ¯°Ñ¶¶¶¯¯¯°%CL_RED%Ñ¶¶Ñ¯  ¸z^>~%CL_BRIGHT% _¶ ,«³^^¡æ°%CL_YELLOW%@@¶¨      0¶@¶¯          
-echo                   ¯¶¶¸     Ñ@@¶^*%CL_BRIGHT%«¯~«¡J¾¸ %CL_RED%`=Z^+¸_ %CL_CYAN%¶ ]¸¸_[ 0%CL_RED%¶ ¸«¢³¯ %CL_BRIGHT% p¶P^^_æ¶^^  %CL_YELLOW%¶@@Ê     _¶@@Å            
-echo                     Ñ¶§     ¶@@§ ¯%CL_BLUETTE%°¶%CL_BRIGHT%¡Å¶¯4¡ %CL_RED% `=^^¬%CL_CYAN%¶c,   ¯N¶%CL_RED%ã^<è^^%CL_BRIGHT%  _p°_¶%CL_BLUETTE%g¶¯%CL_YELLOW%    _@@¶     _¶@@Ê             
-echo   yggggggg¡_         0¶¶¡    ¶@@L %CL_BLUETTE% J@%CL_BRIGHT%@Ñ  ¯³,   ,%CL_CYAN%¨¨^^¨¨¨  ¨%CL_BRIGHT%¯   ¸æ´ ¸Ê¶%CL_BLUETTE%@¶  %CL_YELLOW%   ¶@@Ê     ¶@@Ê        ,«-~~°
-echo   @@@@@@@¶¶@¶¶¡_      ^^@¶¡   ¨¶@¶%CL_BLUETTE%  ¯@@%CL_BRIGHT% `¡   °, ]          %CL_BRIGHT% µ°¯  gÊ%CL_BLUETTE%w¶@¶  %CL_YELLOW%  w@@¶     ¶@@Ê     ¸«"¯      
-echo   @@@@@@@@@@@@@¶¶¡_    Ñ@@§   Ñ@@§%CL_BLUETTE%  ¶@[%CL_BRIGHT% ¯¼_  ¯ç]_¶~~~!¶¸M É   %CL_BRIGHT%_¶¯ %CL_BLUETTE%¶@@Ê   %CL_YELLOW% ¶@@È    _¶@¶    ¡¶^^       __
-echo   ¯^^¯Ñ@@@¶°ÑÑ¶@@@@¶y    Ñ@@§   ¶@@ç %CL_BLUETTE%Ñ@¶ç%CL_BRIGHT%  Ñ¡  "g/      `MÏ   yÉ  %CL_BLUETTE%¶@@¶¨  %CL_YELLOW%  @@¶     ¶@@È  ¡¶@@¶_¡¡¶@°°^^^^
-echo       Ñ¶@¶¶_  ¯Ñ@@@@¶¸   ¶@@L  ¯¶@¶  %CL_BLUETTE%¶@¶ç %CL_BRIGHT%¶¯°¡ ¯        `  ¡P¶  %CL_BLUETTE%¶@@¶¯    %CL_YELLOW%¶@@Ê     ¶¯¶  g¶@@@¶¶°ã¯     
-echo      __ý@@@¶¶¶g¶@@@@[¯   0Ê¯¶   Ñ@@L %CL_BLUETTE%¯¶@@¶¶  %CL_BRIGHT% ³w_       ],¶¯ %CL_BLUETTE%J_¶@@¶^^    %CL_YELLOW% ¶@@¨     L ¶ g¶@@¶¯  p¯      
-echo   gg¶@@@@@@@@@@@@@@¶¶     ¶ ¯L   ¶@¶_%CL_BLUETTE%  Ñ@@¶§¸  %CL_BRIGHT% ¯¯^^^^¶°^^^^¯ %CL_BLUETTE%   g@@¶Å¯  %CL_YELLOW%    Ñ¶¶      L ¶_¶@¶Ê¯w¶¡p=!~~==¬
-echo   @@@@@@@@@@@@@@@@@@¶ç    ¶p ^^   J¶@[   %CL_BLUETTE%`¶¶@¶¶g_    ¶    _¡¶¶@¶Ñ¯       %CL_YELLOW% ¯¶Ê      [_¶¶@¶¯¡g¶@@¶       
-echo   @@@@¶ÑÑ$ÅÑ¶°°Ñ¶ÑÑÑ¶¶    J§      ¶Ñ¶    %CL_BLUETTE% ¯Ñ¶@@¶¶g¡¡¶¡gg¶¶@¶¶Ê¯        %CL_YELLOW% ¶ ¶L      ¶@@¶¶¡¶¶ÑÑÑ°¶¶¶¶¶¶¶¶
-echo   ¶¶Ê_y¶°¯    £¯     ¯¹    Ê      ¶  r   %CL_BLUETTE%    ¯°Ñ¶@@@@@@¶ÑÑ^^¯            %CL_YELLOW%  ¶       ¶¶àÑÕ¯¯¡¶Ñ¯¯    ¯4_ 
-echo   _g¶^^        ¶                    L ì  %CL_BLUETTE%          Ñ@@@¶                 %CL_YELLOW%  ]      ¡¶^^  ¡æ°¯        _p¨ 
-echo   Ñ¯          ¯!                   ª "   %CL_BLUETTE%          ÑÑÑF                  %CL_YELLOW% ´    -°¯   °¯          ª^^   
+echo                                       %CL_GREEN%      _Â¡gÂ¶Â¶@@ÃŠ^^^^^^Â¶Â¶ggÂ¡_      %CL_BRIGHT%    www.gabrielemotta.com        
+echo                                       %CL_GREEN%   _ÂµPÂ¶Â¯Â¯Â¯^^Â°Ã‘L   Â¶@@@@Â¶Â¶Â¡_     %CL_BRIGHT%                                 
+echo                                       %CL_GREEN% Â¸Â¶ÃŠ  Â¨L     _   Ã‘Ã‘Â¶@@Â¶  ^^q_   %CL_BRIGHT%      Robobackup 1.0                        
+echo                                       %CL_GREEN%p^^ Ã…_  ]     L  J   Â¯Ã‘Â¶   Â¸Â¶Ã§  %CL_BRIGHT%      _                          
+echo                %CL_BRIGHT%       _      Â¡_     %CL_GREEN%_Â¶    )  Â¨_    L  Ã    ]Â¯  ,Â¶@Â¶Â§%CL_BRIGHT%gÂ¡Â¡Â¡__Â¶`Ã§    Â¡~q                  
+echo                %CL_BRIGHT%      Â¶^^Â¼____jÂ¡^^Â¼Ã¦w=Âª%CL_GREEN%Â°[     \  \    L  Ãˆ    ÃŠ  ,Ã•Â¶@@@Ãˆ%CL_BRIGHT%Â¯Â¯Â¯Â¯Ã‘Â¯Â°^^^^Â°Â°Â°ÃŠ,wÂ¶mmÃ¦q_            
+echo                %CL_BRIGHT%Â¸Â¡Ã¦^*wÂ¶Â¶~ ÃŽ^^Â¯Â¯Â¯ ^|0L  %CL_GREEN%  Â¶Ã§     L J_   L J    j  y^^qÂ¶@@Â¶L%CL_BRIGHT%    Â¶ L     L]     [Â¶            
+echo               _%CL_BRIGHT%Â¶Â¶       [     J L  %CL_RED% J@%CL_GREEN%Â¶Â§     L [   ^| ^|   ,^^ JÂ¯_Â¶@@@^|[%CL_BRIGHT%     W      \]     [Â¶%CL_YELLOW%gÂ¡_         
+echo          _Â¡yÂ¶Ã‘Ã‘%CL_BRIGHT%Ã‘Ã‘      Â¿Â¶     Â¨Ã½   %CL_RED% Â¶Â¯ÃŠ%CL_GREEN%Â¶Â¶_    ,"_  ^| Ãˆ   Â¶ /Â¯,Â¶@@Â¶Ã‘Â¶%CL_RED%[%CL_BRIGHT%     `      Â¨Â¶     [Â¶Ã‘Ã‘Ã‘%CL_YELLOW%Â¶Â¶ggÂ¡_   
+echo      _Â¡yÂ¶Â°Â¯    %CL_BRIGHT% Ã‹r     ^^       Â¯  %CL_RED%  J Â¯Ã‘@%CL_GREEN%Â¶Ã§    ,\  Â¬ L  0 / gÂ¶@@@Â¶Ã‘%CL_RED%Â¶Â¶%CL_BRIGHT%                   [Â¶   %CL_YELLOW%  Â¯^^Ã‘Ã‘Â¶gÂ¿
+echo   Â¼gÂ¶Â¶ÃŠ_       %CL_BRIGHT% Â¶[                 %CL_RED%  L  Â¶Â¶%CL_GREEN%Ã‘Â¶_   \L  J  Â¸Ã‘` g@Â¶Ã…Ã‘@%CL_RED% MÃ‘[ %CL_BRIGHT%                  Ã‡ÃŠ    %CL_YELLOW%    _Â¡Ã½Â¶
+echo        Â¯Â°ÂªwÂ¡_  %CL_BRIGHT% Â¯Ã‘Â¶Âµ,_             %CL_RED%  Â¶Â¡Â¡@Â¶%CL_GREEN% Â¯Ã‘Ã§   Ã¢  Ã‰  Ã½Â´Â¡Â¶@Â¶Â¯ _@%CL_RED%@gÂ¶L %CL_BRIGHT%            _._Ã†r^^     %CL_YELLOW%_Â¡gÂ¶Â¶Â°Â¯  
+echo            Â¯^^Â¶Ã§_   %CL_BRIGHT%^^ÃžÃƒ~Â»,_       %CL_RED%    Â¶Â¯Â°Ã‘Â¶y_ %CL_GREEN%^^Â¶Â¡_ ______Â¶@Â¶Â¯ %CL_RED%_gÂ¶Ã‘^^0Ã•Â¸  %CL_BRIGHT%       Â¸.-Â¡Ã¦~Â¯     %CL_YELLOW%_gÂ¶@Â¶Â°Â¯     
+echo               Â¯Ã‘Â¶Â¡   %CL_BRIGHT% Â¯^^^*ÃŠÂ¶v,_   %CL_RED%   MÂ©^>,  Â¯Ã‘Â¶gÂ¡%CL_GREEN%Â¶@Â¶@@@@@@@ÃŠÂ¡%CL_RED%gÂ¶Ã‘Â¯  Â«$Â£Â¶   %CL_BRIGHT%  _.r_gÂ¶Â¶Â¯  %CL_YELLOW%    _Ã¦Â¶@Â¶Â¯        
+echo                  Ã‘Â¶Â¡      Ã‘Â¶gÂ¡Â°%CL_BRIGHT%Â»,_ %CL_RED%  L '`Â¬   Â¯Â°Ã‘Â¶Â¶Â¶Â¯Â¯Â¯Â°%CL_RED%Ã‘Â¶Â¶Ã‘Â¯  Â¸z^>~%CL_BRIGHT% _Â¶ ,Â«Â³^^Â¡Ã¦Â°%CL_YELLOW%@@Â¶Â¨      0Â¶@Â¶Â¯          
+echo                   Â¯Â¶Â¶Â¸     Ã‘@@Â¶^*%CL_BRIGHT%Â«Â¯~Â«Â¡JÂ¾Â¸ %CL_RED%`=Z^+Â¸_ %CL_CYAN%Â¶ ]Â¸Â¸_[ 0%CL_RED%Â¶ Â¸Â«Â¢Â³Â¯ %CL_BRIGHT% pÂ¶P^^_Ã¦Â¶^^  %CL_YELLOW%Â¶@@ÃŠ     _Â¶@@Ã…            
+echo                     Ã‘Â¶Â§     Â¶@@Â§ Â¯%CL_BLUETTE%Â°Â¶%CL_BRIGHT%Â¡Ã…Â¶Â¯4Â¡ %CL_RED% `=^^Â¬%CL_CYAN%Â¶c,   Â¯NÂ¶%CL_RED%Ã£^<Ã¨^^%CL_BRIGHT%  _pÂ°_Â¶%CL_BLUETTE%gÂ¶Â¯%CL_YELLOW%    _@@Â¶     _Â¶@@ÃŠ             
+echo   ygggggggÂ¡_         0Â¶Â¶Â¡    Â¶@@L %CL_BLUETTE% J@%CL_BRIGHT%@Ã‘  Â¯Â³,   ,%CL_CYAN%Â¨Â¨^^Â¨Â¨Â¨  Â¨%CL_BRIGHT%Â¯   Â¸Ã¦Â´ Â¸ÃŠÂ¶%CL_BLUETTE%@Â¶  %CL_YELLOW%   Â¶@@ÃŠ     Â¶@@ÃŠ        ,Â«-~~Â°
+echo   @@@@@@@Â¶Â¶@Â¶Â¶Â¡_      ^^@Â¶Â¡   Â¨Â¶@Â¶%CL_BLUETTE%  Â¯@@%CL_BRIGHT% `Â¡   Â°, ]          %CL_BRIGHT% ÂµÂ°Â¯  gÃŠ%CL_BLUETTE%wÂ¶@Â¶  %CL_YELLOW%  w@@Â¶     Â¶@@ÃŠ     Â¸Â«"Â¯      
+echo   @@@@@@@@@@@@@Â¶Â¶Â¡_    Ã‘@@Â§   Ã‘@@Â§%CL_BLUETTE%  Â¶@[%CL_BRIGHT% Â¯Â¼_  Â¯Ã§]_Â¶~~~!Â¶Â¸M Ã‰   %CL_BRIGHT%_Â¶Â¯ %CL_BLUETTE%Â¶@@ÃŠ   %CL_YELLOW% Â¶@@Ãˆ    _Â¶@Â¶    Â¡Â¶^^       __
+echo   Â¯^^Â¯Ã‘@@@Â¶Â°Ã‘Ã‘Â¶@@@@Â¶y    Ã‘@@Â§   Â¶@@Ã§ %CL_BLUETTE%Ã‘@Â¶Ã§%CL_BRIGHT%  Ã‘Â¡  "g/      `MÃ   yÃ‰  %CL_BLUETTE%Â¶@@Â¶Â¨  %CL_YELLOW%  @@Â¶     Â¶@@Ãˆ  Â¡Â¶@@Â¶_Â¡Â¡Â¶@Â°Â°^^^^
+echo       Ã‘Â¶@Â¶Â¶_  Â¯Ã‘@@@@Â¶Â¸   Â¶@@L  Â¯Â¶@Â¶  %CL_BLUETTE%Â¶@Â¶Ã§ %CL_BRIGHT%Â¶Â¯Â°Â¡ Â¯        `  Â¡PÂ¶  %CL_BLUETTE%Â¶@@Â¶Â¯    %CL_YELLOW%Â¶@@ÃŠ     Â¶Â¯Â¶  gÂ¶@@@Â¶Â¶Â°Ã£Â¯     
+echo      __Ã½@@@Â¶Â¶Â¶gÂ¶@@@@[Â¯   0ÃŠÂ¯Â¶   Ã‘@@L %CL_BLUETTE%Â¯Â¶@@Â¶Â¶  %CL_BRIGHT% Â³w_       ],Â¶Â¯ %CL_BLUETTE%J_Â¶@@Â¶^^    %CL_YELLOW% Â¶@@Â¨     L Â¶ gÂ¶@@Â¶Â¯  pÂ¯      
+echo   ggÂ¶@@@@@@@@@@@@@@Â¶Â¶     Â¶ Â¯L   Â¶@Â¶_%CL_BLUETTE%  Ã‘@@Â¶Â§Â¸  %CL_BRIGHT% Â¯Â¯^^^^Â¶Â°^^^^Â¯ %CL_BLUETTE%   g@@Â¶Ã…Â¯  %CL_YELLOW%    Ã‘Â¶Â¶      L Â¶_Â¶@Â¶ÃŠÂ¯wÂ¶Â¡p=!~~==Â¬
+echo   @@@@@@@@@@@@@@@@@@Â¶Ã§    Â¶p ^^   JÂ¶@[   %CL_BLUETTE%`Â¶Â¶@Â¶Â¶g_    Â¶    _Â¡Â¶Â¶@Â¶Ã‘Â¯       %CL_YELLOW% Â¯Â¶ÃŠ      [_Â¶Â¶@Â¶Â¯Â¡gÂ¶@@Â¶       
+echo   @@@@Â¶Ã‘Ã‘$Ã…Ã‘Â¶Â°Â°Ã‘Â¶Ã‘Ã‘Ã‘Â¶Â¶    JÂ§      Â¶Ã‘Â¶    %CL_BLUETTE% Â¯Ã‘Â¶@@Â¶Â¶gÂ¡Â¡Â¶Â¡ggÂ¶Â¶@Â¶Â¶ÃŠÂ¯        %CL_YELLOW% Â¶ Â¶L      Â¶@@Â¶Â¶Â¡Â¶Â¶Ã‘Ã‘Ã‘Â°Â¶Â¶Â¶Â¶Â¶Â¶Â¶Â¶
+echo   Â¶Â¶ÃŠ_yÂ¶Â°Â¯    Â£Â¯     Â¯Â¹    ÃŠ      Â¶  r   %CL_BLUETTE%    Â¯Â°Ã‘Â¶@@@@@@Â¶Ã‘Ã‘^^Â¯            %CL_YELLOW%  Â¶       Â¶Â¶Ã Ã‘Ã•Â¯Â¯Â¡Â¶Ã‘Â¯Â¯    Â¯4_ 
+echo   _gÂ¶^^        Â¶                    L Ã¬  %CL_BLUETTE%          Ã‘@@@Â¶                 %CL_YELLOW%  ]      Â¡Â¶^^  Â¡Ã¦Â°Â¯        _pÂ¨ 
+echo   Ã‘Â¯          Â¯!                   Âª "   %CL_BLUETTE%          Ã‘Ã‘Ã‘F                  %CL_YELLOW% Â´    -Â°Â¯   Â°Â¯          Âª^^   
 echo. 
 choice /C P /D P /t 5
 goto detailed_help
