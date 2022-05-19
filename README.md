@@ -3,6 +3,10 @@ Supersimple script to handle a configfile-driven backup via Robocopy
 
 ![image](https://user-images.githubusercontent.com/13221359/168588983-f46b5ac6-bfb4-4d64-a221-a43230c8ed44.png)
 
+## Features in development
+Simple incremental backup basing on the folder names
+Task scheduling
+
 
 # how does it work?
 1. Define the origins and destinations as shown in the **origins_destinations.txt** example file
@@ -53,7 +57,6 @@ The help shows as it follow:
 |  The Robocopy used parameters are:                         | 
 |                                                            | 
 |  /Compress /Z /B /XO /fft /V /NP /R:3 /E /Z /W:5 /MT:32    | 
-
 
 
 ```
