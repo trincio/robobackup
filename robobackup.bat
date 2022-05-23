@@ -1,6 +1,9 @@
 @echo off
 
- 
+REM ADVICE: This application mixes the interface and the business logic, in a old fashion development style. No MVC, no patterns, nothing. Just few (FEW) uncle Bob tips sparsely applied.
+
+
+
 
 REM ROBOCOPY ERRORLEVEL  HANDLED VIA !ERRORLEVEL!
 REM DETAILS: https://stackoverflow.com/questions/24866477/if-call-exit-and-errorlevel-in-a-bat
@@ -53,6 +56,12 @@ choice /C M /D M /t %DEFAULT_GENERAL_TIMEOUT%
 
 cls
 )
+
+
+REM DETERMINE A TEST FLAG TO SKIP THE ACTUAL EXECUTION OF ROBOCOPY
+REM the 2 values MUST be already trimmed
+set TEST_FLAG=true
+if "%~4" equ "" set TEST_FLAG=false      
 
 
 REM COLOR VARIABLE SETTINGS
@@ -430,6 +439,9 @@ REM DETERMINING THE TOKENIZED DATA AND VARIABLES FOR TIMESTAMP
 for /f "tokens=1,2,3,4 delims=;" %%a in (%CURRENTSETTINGFILE%) do (
 
 
+
+	REM DETERMINING THE TOKENS
+
 	set SOURCE=%%a
 	set DESTINATION=%%b
 	set DESCRIPTION=%%c
@@ -443,11 +455,12 @@ for /f "tokens=1,2,3,4 delims=;" %%a in (%CURRENTSETTINGFILE%) do (
 	
 
 
- 
-	
+	REM DETERMINING THE DATE AND TIME: BASED ON GG-MM-AAAA DATE MODEL. PLEASE CHANGE IT ACCORDINGLY TO YOUR DATETIME MODEL
 	set CurDate=!date:~6,4!!date:~3,2!!date:~0,2!
 	set CurTime=!time:~0,2!.!time:~3,2!.!time:~6,2!
 
+
+ 
 
 	REM ADD THE HEAD PATH TO THE DESTINATION
 	set COMPLETE_PATH_DESTINATION=!HEAD_DESTINATION!!DESTINATION!\!CurDate!
@@ -491,10 +504,58 @@ for /f "tokens=1,2,3,4 delims=;" %%a in (%CURRENTSETTINGFILE%) do (
 	REM ALSO THE SOURCE NEEDS THE QUOTATION (PREVIOUSLY REMOVED AT THE MOMENT AS A STANDARD BEHAVIOR)
 	set SOURCE="!SOURCE!"
 
+
+
+	REM THE DESTINATION WILL BE RENAMED APPENDING .KO IF ON ERROR (removing quotation mark)
+	set COMPLETE_PATH_DESTINATION_KO="!CurDate!.KO"
+	REM THE DESTINATION WILL BE RENAMED APPENDING .OK IF EVERYTHING WORKS  (removing quotation mark)
+	set COMPLETE_PATH_DESTINATION_OK="!CurDate!.OK"
+
 	REM ALSO THE DESTINATION NEEDS THE QUOTATION (PREVIOUSLY REMOVED TO AVOID ANY ISSUE WITH SPACES IN PATH NAMES)
 	set COMPLETE_PATH_DESTINATION="!COMPLETE_PATH_DESTINATION!"
-
  
+ 
+	SET TIME_FILENAME_ADD=
+	 
+	
+	REM RELEVANT CHECK: IF THE DESTINATION ALREADY EXISTS INFORMS THE USER
+	
+	cls
+	
+	set CURRENT_CHECKED_FOLDER=!COMPLETE_PATH_DESTINATION! 
+	echo  ---- checking for incomplete destination ----
+	IF EXIST !CURRENT_CHECKED_FOLDER! (
+	
+	set TIME_FILENAME_ADD=!time:~0,2!.!time:~3,2!.!time:~6,2!
+	set COMPLETE_PATH_DESTINATION="!HEAD_DESTINATION!!DESTINATION!\!CurDate!"
+	set COMPLETE_PATH_DESTINATION_KO="!CurDate!.!TIME_FILENAME_ADD!.KO"
+	set COMPLETE_PATH_DESTINATION_OK="!CurDate!.!TIME_FILENAME_ADD!.OK"	
+	
+	echo ---- new COMPLETE_PATH_DESTINATION_KO is !COMPLETE_PATH_DESTINATION_KO! ----
+	
+	
+	call:existing_destination
+	call:proceed_or_cancel
+	)
+
+
+	cls  
+	set CURRENT_CHECKED_FOLDER=!COMPLETE_PATH_DESTINATION_OK! 
+	echo ---- checking for complete destination ^(status: OK^) ----
+	IF EXIST !CURRENT_CHECKED_FOLDER! (
+	
+	set TIME_FILENAME_ADD=!time:~0,2!.!time:~3,2!.!time:~6,2!
+	set COMPLETE_PATH_DESTINATION="!HEAD_DESTINATION!!DESTINATION!\!CurDate!.!TIME_FILENAME_ADD!"
+	set COMPLETE_PATH_DESTINATION_KO="!CurDate!.!TIME_FILENAME_ADD!.KO"
+	set COMPLETE_PATH_DESTINATION_OK="!CurDate!.!TIME_FILENAME_ADD!.OK"
+	
+	echo ---- new COMPLETE_PATH_DESTINATION_KO is !COMPLETE_PATH_DESTINATION_KO! ----
+	
+	
+	call:existing_destination
+	call:proceed_or_cancel
+	)
+
 	cls
  
  
@@ -544,55 +605,94 @@ for /f "tokens=1,2,3,4 delims=;" %%a in (%CURRENTSETTINGFILE%) do (
 
 
 	call :proceed_or_cancel
+
+
+
+
+
+
+
+
+
 	
 	cls
-
-	REM RELEVANT CHECK: IF THE DESTINATION ALREADY EXISTS IT COULD BE A PROBLEM
-	IF EXIST !COMPLETE_PATH_DESTINATION! (
  
-	echo %CL_CYAN%'       THE FOLDER %CL_RED%'!COMPLETE_PATH_DESTINATION!'%CL_CYAN% ALREADY EXISTS!%CL_WHITE%'
-	echo.
-	echo What does that mean? Maybe you have already launched the backup today.
-	echo.
-	echo Maybe you really need to launch again the Robobackup with such exact destination BUT
-	echo this would be an aware action, and to be sure it is aware you're asked to launch 
-	echo manually the robocopy command.
-	echo.
-	echo Please be sure you UNDERSTAND what does mean launching the following command before
-	echo launching it.
-	echo.
-	echo %CL_RED% robocopy !SOURCE!  !COMPLETE_PATH_DESTINATION!  /Compress /Z /B /XO /fft /V /NP /R:3 /E /Z /W:5 /MT:32 /LOG+:!CurDetailedLogFile! %CL_CYAN%
-	echo.
-	echo.
-
-
-	
-	call :proceed_or_cancel
-	 
-	)
- 
-	
-	echo !CurDate!-!CurTime! details will be written here: '!CurDetailedLogFile!'
-	echo !CurDate!-!CurTime! details will be written here: '!CurDetailedLogFile!' >> !CurMainLogFile!
+	echo !CurDate!-!CurTime! INFO: detailed logs will be written here: '!CurDetailedLogFile!'
+	echo !CurDate!-!CurTime! INFO: detailed logs will be written here: '!CurDetailedLogFile!' >> !CurMainLogFile!
 
 
 	call :proceed_or_cancel
 	cls
+
+ 
+
+	REM DETERMINING THE LAST FOLDER THAT HAD SUCCESS (the naming convention, using dates, helps this task)
+	FOR /F "delims=" %%k IN ('dir "!HEAD_DESTINATION!!DESTINATION!\*.ok" /b /ad /oN') DO SET LAST_FOLDER_FOUND=%%k
+	
+ 
+	REM IF NO FOLDER HAS BEEN FOUND, IT ASSUMES THAT IT MUST START FROM A "ACTIVE FULL" BACKUP (USING A MAXAGE VERY FAR IN THE PAST)
+	REM Notice it works also if any folder has been set in KO (errors/issues) or if
+	REM any folder has left without any appended string OK/KO (in case of crash &/or forced stop of the script)
+	if "!LAST_FOLDER_FOUND!" equ "" set LAST_FOLDER_FOUND=19710101.OK
+
+	
+	REM GETS THE DATE FOR THE MAXAGE
+	set MAXAGE=!LAST_FOLDER_FOUND:~0,8!
+
+	echo "INFO: The last folder found at the path !HEAD_DESTINATION!!DESTINATION! is: !LAST_FOLDER_FOUND!" >> !CurDetailedLogFile!
+	echo "INFO: that means the MAXAGE would be  !MAXAGE!" >> !CurDetailedLogFile!
+	echo "INFO: The TEST FLAG is: !TEST_FLAG!" >> !CurDetailedLogFile!
 
  
 	set timestamp=!date:~6,4!!date:~3,2!!date:~0,2! !time:~0,2!.!time:~3,2!.!time:~6,2!
 	echo !timestamp! BEGINNING THE ROBOCOPY BETWEEN THE AFOREMENTIONED FOLDERS >> !CurMainLogFile!
 	
-	echo *** RUNNING THE FOLLOWING COMMAND:
-	echo robocopy !SOURCE!  !COMPLETE_PATH_DESTINATION!  /Compress /Z /B /XO /fft /V /NP /R:3 /E /Z /W:5 /MT:32 /LOG+:!CurDetailedLogFile! >> !CurMainLogFile!
-	echo
-	robocopy !SOURCE!  !COMPLETE_PATH_DESTINATION!  /Compress /Z /B /XO /fft /V /NP /R:3 /E /Z /W:5 /MT:32 /LOG+:!CurDetailedLogFile!
+	echo ------ TEST_FLAG is !TEST_FLAG!  ------  >> !CurMainLogFile!
 
-	REM set robocopy_erorlevel=!ERRORLEVEL!
-	set robocopy_erorlevel=ERRORLEVEL
+
+
+
+	REM the  %var: =% TRIMS THE SPACES IN THE VARIABLE. NB: NOTEPAD DOESN'T HIGHLIGHT IT, BUT IT WORKS
+	if "!TEST_FLAG: =!"=="false" (
+
+		echo   RUNNING THE FOLLOWING COMMAND:  >> !CurMainLogFile!
+
+		echo robocopy !SOURCE!  !COMPLETE_PATH_DESTINATION!  /MAXAGE:!MAXAGE! /Compress /Z /B /XO /fft /V /NP /R:3 /E /Z /W:5 /MT:32 /LOG+:!CurDetailedLogFile! >> !CurMainLogFile!
+
+		robocopy !SOURCE!  !COMPLETE_PATH_DESTINATION!  /MAXAGE:!MAXAGE! /Compress /Z /B /XO /fft /V /NP /R:3 /E /Z /W:5 /MT:32 /LOG+:!CurDetailedLogFile!
+		
+		set robocopy_erorlevel=!ERRORLEVEL!
+	
+	)
+
+
 	echo robocopy has exited with errorlevel: !robocopy_erorlevel!
 	
-	
+	echo robocopy has exited with errorlevel: !robocopy_erorlevel!  >> !CurMainLogFile!
+
+
+														
+	rem																	THIS https://ss64.com/nt/robocopy-exit.html EXPLAINS MUCH BETTER THE ROBOCOPY ERRORLEVELS
+	rem
+	rem																	if %ERRORLEVEL% EQU 16 echo ***FATAL ERROR*** & goto end
+	rem																	if %ERRORLEVEL% EQU 15 echo OKCOPY + FAIL + MISMATCHES + XTRA & goto end
+	rem																	if %ERRORLEVEL% EQU 14 echo FAIL + MISMATCHES + XTRA & goto end
+	rem																	if %ERRORLEVEL% EQU 13 echo OKCOPY + FAIL + MISMATCHES & goto end
+	rem																	if %ERRORLEVEL% EQU 12 echo FAIL + MISMATCHES& goto end
+	rem																	if %ERRORLEVEL% EQU 11 echo OKCOPY + FAIL + XTRA & goto end
+	rem																	if %ERRORLEVEL% EQU 10 echo FAIL + XTRA & goto end
+	rem																	if %ERRORLEVEL% EQU 9 echo OKCOPY + FAIL & goto end
+	rem																	if %ERRORLEVEL% EQU 8 echo FAIL & goto end
+	rem																	if %ERRORLEVEL% EQU 7 echo OKCOPY + MISMATCHES + XTRA & goto end
+	rem																	if %ERRORLEVEL% EQU 6 echo MISMATCHES + XTRA & goto end
+	rem																	if %ERRORLEVEL% EQU 5 echo OKCOPY + MISMATCHES & goto end
+	rem																	if %ERRORLEVEL% EQU 4 echo MISMATCHES & goto end
+	rem																	if %ERRORLEVEL% EQU 3 echo OKCOPY + XTRA & goto end
+	rem																	if %ERRORLEVEL% EQU 2 echo XTRA & goto end
+	rem																	if %ERRORLEVEL% EQU 1 echo OKCOPY & goto end
+	rem																	if %ERRORLEVEL% EQU 0 echo No Change & goto end
+
+		
 	
  
 	set timestamp=!date:~6,4!!date:~3,2!!date:~0,2! !time:~0,2!.!time:~3,2!.!time:~6,2!
@@ -601,6 +701,14 @@ for /f "tokens=1,2,3,4 delims=;" %%a in (%CURRENTSETTINGFILE%) do (
 	echo. >> !CurMainLogFile!
  
 
+
+
+	REM IN ORDER TO KEEP THE FINAL STATUS, I.E. IF EVERYTHING WORKED FINE OR NOT, ROBOBACKUP RENAMES THE LAST DESTINATION WRITTEN
+	REM MEANS: IF EVERYTHING SEEMED WORKING WELL, LETS RENAME THE PATH WITH .OK, WITH .KO OTHERWISE
+	IF !robocopy_erorlevel! LEQ 7 (rename !COMPLETE_PATH_DESTINATION! !COMPLETE_PATH_DESTINATION_OK! ) ELSE (rename !COMPLETE_PATH_DESTINATION! !COMPLETE_PATH_DESTINATION_KO! )
+	
+
+	REM  FURTHER INFO
 	IF !robocopy_erorlevel! EQU 0 (
 		echo No issues but same files in the destination directory has been found. No action taken. Means: no copy. >> !CurMainLogFile!
 	) 
@@ -628,7 +736,6 @@ for /f "tokens=1,2,3,4 delims=;" %%a in (%CURRENTSETTINGFILE%) do (
 
 )
 
-echo                --------- PROCESS COMPLETED --------- 
 echo                --------- PROCESS COMPLETED --------- >> !CurMainLogFile!
 
 setlocal disabledelayedexpansion
@@ -641,6 +748,35 @@ GOTO:EOF
 
 
 
+ 
+
+:existing_destination
+
+	echo %CL_CYAN%'       THE FOLDER %CL_RED%'!CURRENT_CHECKED_FOLDER!'%CL_CYAN% ALREADY EXISTS!%CL_WHITE%'
+	echo.
+	echo What does that mean? Maybe you have already launched the backup today.
+	echo.
+	echo Maybe you really need to launch again the Robobackup with such exact destination BUT
+	echo this would be an aware  action, and to be  sure it is aware you're   asked to launch 
+	echo manually the robocopy command.
+	echo.
+	echo %CL_CYAN%If the  folder has a  '.OK' appended,  it means it has  been completed.  In 
+	echo such case  Robobackup  will  re-create a backup folder,  appending the  date-time of 
+	echo execution.  It  is up to  you  to compare the  folders  later to  determine  what to 
+	echo maintain or delete.%CL_WHITE%
+	echo.
+	echo Please be sure you UNDERSTAND what does mean launching the following  command before
+	echo launching it.
+	echo.
+	echo %CL_RED% robocopy !SOURCE!  !COMPLETE_PATH_DESTINATION!  /MAXAGE:^(tbd^) /Compress /Z /B /XO /fft /V /NP /R:3 /E /Z /W:5 /MT:32 /LOG+:!CurDetailedLogFile! %CL_CYAN%
+	echo.
+	echo.
+	
+	echo.  THE FOLDER '!COMPLETE_PATH_DESTINATION!' ALREADY EXISTS! Means: you're running today more than 2 times the same backup. If got the approval, Robocopy would continue to copy files in this folder, and if it encounters an existing file in the destination, thanks to the /XO flag, it will overwrite only if more recent or having the same date. >> !CurMainLogFile!
+goto:EOF	
+
+
+ 
 
 
 :notworking_driveletter
